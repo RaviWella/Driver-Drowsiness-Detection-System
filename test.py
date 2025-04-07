@@ -5,7 +5,7 @@ from collections import deque
 import mediapipe as mp
 import time
 
-# Load your trained model
+# Load your trained modelq
 model = load_model("gesture_model.h5")
 labels = ['closed_palm', 'open_palm']  # Index 0 = closed, Index 1 = open
 
