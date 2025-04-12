@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateAccountUI from './CreateAccountUI';
 
-const LoginUI = ({ navigation }) => { 
+const LoginUI = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,18 +18,36 @@ const LoginUI = ({ navigation }) => {
     return re.test(email);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
     } else if (!validateEmail(email)) {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
-      navigation.navigate('Home');
+      try {
+        const response = await fetch('http://10.147.7.224:7071/api/loginUser', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+          await AsyncStorage.setItem('user', JSON.stringify(data.user));
+          navigation.navigate('Home');
+        } else {
+          Alert.alert('Login Failed', data.error || 'Invalid credentials');
+        }
+      } catch (error) {
+        console.error('Login Error:', error);
+        Alert.alert('Error', 'Failed to connect to server');
+      }
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
@@ -71,8 +92,8 @@ const LoginUI = ({ navigation }) => {
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.loginButton} 
+            <TouchableOpacity
+              style={styles.loginButton}
               onPress={handleLogin}
               activeOpacity={0.8}
             >
@@ -85,7 +106,7 @@ const LoginUI = ({ navigation }) => {
               <View style={styles.dividerLine} />
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.socialButton}
               activeOpacity={0.8}
             >
@@ -103,7 +124,10 @@ const LoginUI = ({ navigation }) => {
         </View>
       ) : (
         <CreateAccountUI
-          onCreateAccount={() => console.log('Account created!')}
+          onCreateAccount={() => {
+            setIsCreatingAccount(false);
+            Alert.alert('Success', 'Account created. Please log in.');
+          }}
           onSwitchToLogin={() => setIsCreatingAccount(false)}
         />
       )}
