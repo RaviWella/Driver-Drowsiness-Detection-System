@@ -1,8 +1,10 @@
+// App.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import  LoginUI from './UI/LoginUI';
+import LoginUI from './UI/LoginUI';
 import HomeUI from './UI/HomeUI';
+import AlertsUI from './UI/Alerts'; // ✅ Import Alerts page
 
 const Stack = createStackNavigator();
 
@@ -18,6 +20,11 @@ const App = () => {
         <Stack.Screen 
           name="Home" 
           component={HomeUI} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Alerts" 
+          component={AlertsUI} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

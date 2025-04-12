@@ -164,16 +164,16 @@ const HomeUI = () => {
           <MaterialIcons name="home" size={24} color="#1976D2" />
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialIcons name="notifications" size={24} color="#a0aec0" />
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Alerts')}>
+          <MaterialIcons name="notifications" size={24} color="#1976D2" />
           <Text style={styles.navText}>Alerts</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
           <MaterialIcons name="dashboard" size={24} color="#a0aec0" />
           <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialIcons name="contacts" size={24} color="#a0aec0" />
+        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Contacts')}>
+          <MaterialIcons name="contacts" size={24} color="#1976D2" />
           <Text style={styles.navText}>Contacts</Text>
         </TouchableOpacity>
       </View>
