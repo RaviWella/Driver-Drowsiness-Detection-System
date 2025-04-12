@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 
@@ -15,18 +17,39 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
     return re.test(email);
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     if (!firstName || !lastName || !email || !password) {
       Alert.alert('Error', 'Please fill all fields');
     } else if (!validateEmail(email)) {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
-      onCreateAccount();
+      try {
+        const response = await fetch('http://10.147.7.224:7071/api/registerUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ firstName, lastName, email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 201) {
+          Alert.alert('Success', data.message);
+          onCreateAccount(); // Logs or transitions to login
+        } else {
+          Alert.alert('Error', data.error || 'Registration failed');
+          console.log('Server response error:', data);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+        Alert.alert('Error', 'Unable to connect to server');
+      }
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
@@ -89,8 +112,8 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
-            style={styles.createAccountButton} 
+          <TouchableOpacity
+            style={styles.createAccountButton}
             onPress={handleCreateAccount}
             activeOpacity={0.8}
           >
@@ -103,7 +126,7 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.socialButton}
             activeOpacity={0.8}
           >
