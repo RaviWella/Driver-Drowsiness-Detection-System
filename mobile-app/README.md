@@ -7,3 +7,4 @@ npm install @react-navigation/native @react-navigation/stack react-native-screen
 npx expo install expo-contacts
 npx expo install expo-permissions
 npx expo install expo-checkbox
+npx expo install @react-native-async-storage/async-storage
