@@ -35,6 +35,7 @@ const LoginUI = ({ navigation }) => {
 
         if (response.status === 200) {
           await AsyncStorage.setItem('user', JSON.stringify(data.user));
+          await AsyncStorage.setItem('userId', data.user.id);
           await AsyncStorage.setItem('email', data.user.email);
           await AsyncStorage.setItem('fullname', `${data.user.firstName} ${data.user.lastName}`);
           navigation.navigate('Home');
