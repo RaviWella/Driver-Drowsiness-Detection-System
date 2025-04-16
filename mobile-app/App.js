@@ -61,22 +61,35 @@ const App = () => {
             <Stack.Screen 
             name="Home" 
             component={HomeUI} 
-            options={{ headerShown: true }} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
+            
             />
             <Stack.Screen 
             name="Alerts" 
             component={AlertsUI} 
-            options={{ headerShown: true }} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
             />
             <Stack.Screen 
             name="Analytics" 
             component={AnalyticsUI} 
-            options={{ headerShown: true }}
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
             />
             <Stack.Screen 
             name="Contacts" 
             component={Contacts} 
-            options={{ headerShown: true }} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
         />
         </Stack.Navigator>
     </NavigationContainer>
