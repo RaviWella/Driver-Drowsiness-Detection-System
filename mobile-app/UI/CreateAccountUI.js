@@ -24,7 +24,7 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://192.168.1.36:7071/api/registerUser', {
+        const response = await fetch('http://10.29.175.224:7071/api/registerUser', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
