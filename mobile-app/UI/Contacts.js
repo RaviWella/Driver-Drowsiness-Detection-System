@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useLayoutEffect, useRef } from 'react';
-import 
-{
+import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, Animated, ActivityIndicator
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import * as ContactsAPI from 'expo-contacts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import BASE_URL from '../config/apiConfig'; 
+
+const API_BASE = `${BASE_URL}`
 
 const Contacts = () => 
 {
@@ -16,6 +18,7 @@ const Contacts = () =>
     const [contacts, setContacts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [emergencyContacts, setEmergencyContacts] = useState([]);
+    const [userId, setUserId] = useState('');
 
     useLayoutEffect(() => 
     {
@@ -30,17 +33,20 @@ const Contacts = () =>
         });
     }, [navigation]);
 
-    useEffect(() => {
-    Animated.timing(fadeAnim, 
+    useEffect(() => 
     {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-    }).start();
+        Animated.timing(fadeAnim, 
+        {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+        }).start();
 
     const load = async () => 
     {
-        const saved = await loadEmergencyContacts();
+        const storedUserId = await AsyncStorage.getItem('userId');
+        setUserId(storedUserId);
+        const saved = await fetchEmergencyContactsFromCloud(storedUserId);
         await loadDeviceContacts(saved);
     };
     load();
@@ -48,45 +54,50 @@ const Contacts = () =>
 
     const handleLogout = async () => 
     {
-    await AsyncStorage.removeItem('user');
-    Alert.alert('Logged out', 'You have been successfully logged out.');
-    navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+        await AsyncStorage.removeItem('user');
+        Alert.alert('Logged out', 'You have been successfully logged out.');
+        navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     };
 
     const navigateWithEffect = (screen) => 
-    {
-        setLoading(true);
-        setTimeout(() => 
         {
+        setLoading(true);
+        setTimeout(() => {
             setLoading(false);
             navigation.navigate(screen);
         }, 500);
     };
 
-    const loadEmergencyContacts = async () => 
+    const fetchEmergencyContactsFromCloud = async (uid) => 
     {
         try 
         {
-            const json = await AsyncStorage.getItem('emergencyContacts');
-            const parsed = json ? JSON.parse(json) : [];
-            setEmergencyContacts(parsed);
-            return parsed;
-        } catch (err) 
+            const response = await fetch(`${API_BASE}/getEmergencyContacts?userId=${uid}`);
+            const data = await response.json();
+            const list = data.emergencyContacts || [];
+            setEmergencyContacts(list);
+            return list;
+        } 
+        catch (err) 
         {
-            console.error('Failed to load emergency contacts from storage:', err);
+            console.error('Cloud fetch failed:', err);
             return [];
         }
     };
 
-    const saveEmergencyContacts = async (list) => 
+    const updateEmergencyContactsToCloud = async (uid, contactsList) => 
     {
         try 
         {
-            await AsyncStorage.setItem('emergencyContacts', JSON.stringify(list));
-            setEmergencyContacts(list);
-        } catch (err) 
+            await fetch(`${API_BASE}/updateEmergencyContacts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: uid, emergencyContacts: contactsList })
+            });
+        } 
+        catch (err) 
         {
-            console.error('Failed to save emergency contacts:', err);
+            console.error('Cloud update failed:', err);
         }
     };
 
@@ -108,7 +119,8 @@ const Contacts = () =>
 
             const deviceList = data
             .filter(c => c.phoneNumbers && c.phoneNumbers.length > 0)
-            .map(c => ({
+            .map(c => 
+            ({
                 id: c.id,
                 name: c.name,
                 phone: c.phoneNumbers[0].number,
@@ -116,20 +128,16 @@ const Contacts = () =>
 
             const merged = 
             [
-                ...savedEmergencyContacts.map(ec => 
-                ({
-                    ...ec,
-                    isEmergency: true,
-                })),
+                ...savedEmergencyContacts.map(ec => ({ ...ec, isEmergency: true })),
                 ...deviceList
                     .filter(dc => !savedEmergencyContacts.some(ec => ec.phone === dc.phone))
-                    .map(dc => ({
-                    ...dc,
-                    isEmergency: false,
-                    })),
+                    .map(dc => ({ ...dc, isEmergency: false })),
             ];
-            setContacts(merged);
-        } catch (err) {
+
+        setContacts(merged);
+        } 
+        catch (err) 
+        {
             console.error('Failed to load device contacts:', err);
         }
     };
@@ -157,10 +165,11 @@ const Contacts = () =>
         }
     };
 
-    const addEmergency = async (contact) =>
+    const addEmergency = async (contact) => 
     {
         const updated = [...emergencyContacts, contact];
-        await saveEmergencyContacts(updated);
+        setEmergencyContacts(updated);
+        await updateEmergencyContactsToCloud(userId, updated);
         setContacts(prev =>
             prev.map(c => c.phone === contact.phone ? { ...c, isEmergency: true } : c)
         );
@@ -169,7 +178,8 @@ const Contacts = () =>
     const removeEmergency = async (contact) => 
     {
         const updated = emergencyContacts.filter(c => c.phone !== contact.phone);
-        await saveEmergencyContacts(updated);
+        setEmergencyContacts(updated);
+        await updateEmergencyContactsToCloud(userId, updated);
         setContacts(prev =>
             prev.map(c => c.phone === contact.phone ? { ...c, isEmergency: false } : c)
         );
@@ -181,24 +191,24 @@ const Contacts = () =>
 
     const renderContact = ({ item }) => 
     (
-    <View style={styles.contactCard}>
-        <View style={styles.leftSection}>
-        <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{item.name?.[0]}</Text>
+        <View style={styles.contactCard}>
+            <View style={styles.leftSection}>
+            <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{item.name?.[0]}</Text>
+            </View>
+            <View>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.phone}>{item.phone}</Text>
+            </View>
+            </View>
+            <TouchableOpacity onPress={() => toggleEmergency(item)}>
+            <Ionicons
+                name={item.isEmergency ? 'checkmark-circle' : 'add-circle-outline'}
+                size={24}
+                color="#1976D2"
+            />
+            </TouchableOpacity>
         </View>
-        <View>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.phone}>{item.phone}</Text>
-        </View>
-        </View>
-        <TouchableOpacity onPress={() => toggleEmergency(item)}>
-        <Ionicons
-            name={item.isEmergency ? 'checkmark-circle' : 'add-circle-outline'}
-            size={24}
-            color="#1976D2"
-        />
-        </TouchableOpacity>
-    </View>
     );
 
 return (
@@ -276,11 +286,10 @@ contactCard:
     borderColor: '#e2e8f0', borderWidth: 1
 },
 leftSection: { flexDirection: 'row', alignItems: 'center' },
-avatar: 
-{
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#1976D2', justifyContent: 'center', alignItems: 'center',
-    marginRight: 12,
+avatar: {
+width: 36, height: 36, borderRadius: 18,
+backgroundColor: '#1976D2', justifyContent: 'center', alignItems: 'center',
+marginRight: 12,
 },
 avatarText: { color: '#fff', fontWeight: 'bold' },
 name: { fontSize: 15, fontWeight: '600', color: '#2d3748' },

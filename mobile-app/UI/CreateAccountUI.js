@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import BASE_URL from '../config/apiConfig'; 
 
 const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://10.29.175.224:7071/api/registerUser', {
+        const response = await fetch(`${BASE_URL}/registerUser`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
