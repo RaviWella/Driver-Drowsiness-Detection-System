@@ -6,8 +6,9 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import * as ContactsAPI from 'expo-contacts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import BASE_URL from '../config/apiConfig'; 
 
-const API_BASE = 'http://10.29.175.224:8080';
+const API_BASE = `${BASE_URL}`
 
 const Contacts = () => 
 {

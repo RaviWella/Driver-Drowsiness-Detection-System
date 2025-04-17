@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateAccountUI from './CreateAccountUI';
+import BASE_URL from '../config/apiConfig'; 
 
 const LoginUI = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const LoginUI = ({ navigation }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://10.29.175.224:8080/loginUser', {
+        const response = await fetch(`${BASE_URL}/loginUser`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
