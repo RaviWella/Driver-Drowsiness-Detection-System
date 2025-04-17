@@ -7,7 +7,7 @@ import * as ContactsAPI from 'expo-contacts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
-const API_BASE = 'http://192.168.1.36:7071/api';
+const API_BASE = 'http://10.29.175.224:8080';
 
 const Contacts = () => 
 {

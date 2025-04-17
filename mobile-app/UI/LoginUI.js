@@ -25,7 +25,7 @@ const LoginUI = ({ navigation }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://192.168.1.36:7071/api/loginUser', {
+        const response = await fetch('http://10.29.175.224:8080/loginUser', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
