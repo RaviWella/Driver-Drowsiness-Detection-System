@@ -1,4 +1,4 @@
-## install these libraries
+## Install
 
 npm install react-native-paper react-native-vector-icons
 npm install @expo/vector-icons
@@ -8,3 +8,9 @@ npx expo install expo-contacts
 npx expo install expo-permissions
 npx expo install expo-checkbox
 npx expo install @react-native-async-storage/async-storage
+npm install -g azurite
+expo install @expo/vector-icons react-native-chart-kit
+npm install bcryptjs
+
+## Get the ip and replace
+ipconfig getifaddr en0
