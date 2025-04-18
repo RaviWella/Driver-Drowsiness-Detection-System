@@ -79,9 +79,9 @@ const HomeUI = () =>
 
     const stats = 
     [
-        { icon: 'hardware-chip-outline', value: '3/4', label: 'Devices Online' },
+        { icon: 'hardware-chip-outline', value: '4', label: 'Devices Online' },
         { icon: 'alert-circle', value: '3', label: 'Today\'s Alerts' },
-        { icon: 'analytics', value: '87%', label: 'Accuracy' },
+        { icon: 'analytics', value: '99+%', label: 'Accuracy' },
     ];
 
     const devices = 
