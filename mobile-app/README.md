@@ -11,6 +11,8 @@ npx expo install @react-native-async-storage/async-storage
 npm install -g azurite
 expo install @expo/vector-icons react-native-chart-kit
 npm install bcryptjs
+npx expo install @react-native-community/netinfo
+
 
 ## Get the ip and replace
 ipconfig getifaddr en0

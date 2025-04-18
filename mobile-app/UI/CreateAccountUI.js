@@ -4,9 +4,11 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import BASE_URL from '../config/apiConfig';
 
 const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
   const [email, setEmail] = useState('');
+  const [deviceKey, setDeviceKey] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -18,32 +20,39 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
   };
 
   const handleCreateAccount = async () => {
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !deviceKey) {
       Alert.alert('Error', 'Please fill all fields');
     } else if (!validateEmail(email)) {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://192.168.8.193:7071/api/registerUser', {
+        const response = await fetch(`${BASE_URL}/registerUser`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ firstName, lastName, email, password }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            password,
+            deviceKey,
+          }),
         });
 
         const data = await response.json();
 
         if (response.status === 201) {
-          Alert.alert('Success', data.message);
-          onCreateAccount(); // Logs or transitions to login
+          Alert.alert('Success', data.message || 'Account created successfully!');
+          onCreateAccount(); // Go to login
+        } else if (response.status === 403) {
+          Alert.alert('Error', data.error || 'Invalid or already used device key.');
+        } else if (response.status === 409) {
+          Alert.alert('Error', data.error || 'Email is already registered.');
         } else {
-          Alert.alert('Error', data.error || 'Registration failed');
-          console.log('Server response error:', data);
+          Alert.alert('Error', data.error || 'Registration failed.');
         }
       } catch (error) {
         console.error('Network error:', error);
-        Alert.alert('Error', 'Unable to connect to server');
+        Alert.alert('Error', 'Unable to connect to server. Please try again.');
       }
     }
   };
@@ -112,6 +121,15 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
             </TouchableOpacity>
           </View>
 
+          <Text style={styles.label}>Device Key</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your device key"
+            onChangeText={setDeviceKey}
+            value={deviceKey}
+            autoCapitalize="none"
+          />
+
           <TouchableOpacity
             style={styles.createAccountButton}
             onPress={handleCreateAccount}
@@ -126,10 +144,7 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity
-            style={styles.socialButton}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.socialButton} activeOpacity={0.8}>
             <FontAwesome5 name="google" size={18} color="#DB4437" />
             <Text style={styles.socialButtonText}>Continue with Google</Text>
           </TouchableOpacity>
@@ -147,10 +162,7 @@ const CreateAccountUI = ({ onCreateAccount, onSwitchToLogin }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
+  container: { flex: 1, backgroundColor: '#f8f9fa' },
   innerContainer: {
     flex: 1,
     paddingHorizontal: 24,
@@ -171,17 +183,13 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     textAlign: 'center',
   },
-  formContainer: {
-    width: '100%',
-  },
+  formContainer: { width: '100%' },
   nameContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  nameInputContainer: {
-    width: '48%',
-  },
+  nameInputContainer: { width: '48%' },
   label: {
     fontSize: 14,
     fontWeight: '600',
@@ -214,9 +222,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 15,
   },
-  eyeIcon: {
-    padding: 12,
-  },
+  eyeIcon: { padding: 12 },
   createAccountButton: {
     backgroundColor: '#1976D2',
     height: 48,
@@ -240,11 +246,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#e2e8f0',
-  },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
   dividerText: {
     marginHorizontal: 12,
     color: '#718096',
@@ -267,19 +269,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#4a5568',
   },
-  loginPrompt: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  loginText: {
-    color: '#1976D2',
-    fontSize: 15,
-  },
-  loginLink: {
-    color: '#1976D2',
-    fontSize: 15,
-    fontWeight: '600',
-  },
+  loginPrompt: { flexDirection: 'row', justifyContent: 'center' },
+  loginText: { color: '#1976D2', fontSize: 15 },
+  loginLink: { color: '#1976D2', fontSize: 15, fontWeight: '600' },
 });
 
 export default CreateAccountUI;
