@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIn
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+
 
 const HomeUI = () => 
 {
@@ -40,10 +42,17 @@ const HomeUI = () =>
         }
     };
 
+    const [isConnected, setIsConnected] = useState(null);
+
     useEffect(() => 
     {
         fetchUserName();
         determineGreeting();
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+    
+        return () => unsubscribe();
     }, []);
 
     const navigateWithEffect = (targetScreen) => 
@@ -67,11 +76,12 @@ const HomeUI = () =>
         });
     }, [navigation]);
 
+
     const stats = 
     [
-        { icon: 'hardware-chip-outline', value: '3/4', label: 'Devices Online' },
+        { icon: 'hardware-chip-outline', value: '4', label: 'Devices Online' },
         { icon: 'alert-circle', value: '3', label: 'Today\'s Alerts' },
-        { icon: 'analytics', value: '87%', label: 'Accuracy' },
+        { icon: 'analytics', value: '99+%', label: 'Accuracy' },
     ];
 
     const devices = 
@@ -79,8 +89,14 @@ const HomeUI = () =>
         { name: 'IR Camera', status: 'Connected', icon: 'camera-outline', connected: true },
         { name: 'Buzzer', status: 'Connected', icon: 'bell-outline', connected: true },
         { name: 'Detection Engine', status: 'Connected', icon: 'chip', connected: true },
-        { name: 'Cloud Sync', status: 'Not Connected', icon: 'cloud-off-outline', connected: false },
-    ];
+        {
+          name: 'Cloud Sync',
+          status: isConnected === null ? 'Checking...' : isConnected ? 'Connected' : 'Not Connected',
+          icon: isConnected ? 'cloud-outline' : 'cloud-off-outline',
+          connected: isConnected
+        },
+      ];
+      
 
     const alerts = 
     [

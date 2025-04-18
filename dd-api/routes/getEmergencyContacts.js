@@ -16,22 +16,22 @@ router.get('/', async (req, res) =>
 
     try 
     {
-    await client.connect();
-    const db = client.db("DrowsyDB");
-    const users = db.collection("users");
+        await client.connect();
+        const db = client.db("DrowsyDB");
+        const users = db.collection("users");
 
-    const userId = req.query.userId;
-    if (!userId) return res.status(400).json({ error: "Missing userId in query" });
+        const userId = req.query.userId;
+        if (!userId) return res.status(400).json({ error: "Missing userId in query" });
 
-    const user = await users.findOne({ _id: new ObjectId(userId) });
-    if (!user) return res.status(404).json({ error: "User not found" });
-    
-    return res.status(200).json({ emergencyContacts: user.emergencyContacts || [] });
+        const user = await users.findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ error: "User not found" });
+        
+        return res.status(200).json({ emergencyContacts: user.emergencyContacts || [] });
     } 
     catch (err) 
     {
-    console.error("Error:", err.message);
-    return res.status(500).json({ error: "Server error while fetching contacts" });
+        console.error("Error:", err.message);
+        return res.status(500).json({ error: "Server error while fetching contacts" });
     } 
     finally 
     {
