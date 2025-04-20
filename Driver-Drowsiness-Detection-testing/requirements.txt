@@ -1,0 +1,7 @@
+numpy
+opencv-python
+opencv-contrib-python
+mediapipe
+requests
+RPi.GPIO
+smbus2
