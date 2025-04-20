@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateAccountUI from './CreateAccountUI';
+import BASE_URL from '../config/apiConfig'; 
 
 const LoginUI = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const LoginUI = ({ navigation }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       try {
-        const response = await fetch('http://192.168.1.36:7071/api/loginUser', {
+        const response = await fetch(`${BASE_URL}/loginUser`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
@@ -35,6 +36,9 @@ const LoginUI = ({ navigation }) => {
 
         if (response.status === 200) {
           await AsyncStorage.setItem('user', JSON.stringify(data.user));
+          await AsyncStorage.setItem('userId', data.user.id);
+          await AsyncStorage.setItem('email', data.user.email);
+          await AsyncStorage.setItem('fullname', `${data.user.firstName} ${data.user.lastName}`);
           navigation.navigate('Home');
         } else {
           Alert.alert('Login Failed', data.error || 'Invalid credentials');

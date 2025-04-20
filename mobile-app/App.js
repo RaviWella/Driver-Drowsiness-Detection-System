@@ -6,64 +6,100 @@ import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import LoginUI from './UI/LoginUI';
 import HomeUI from './UI/HomeUI';
 import AlertsUI from './UI/Alerts';
+import AnalyticsUI from './UI/Analytics';
+import Contacts from './UI/Contacts';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [initialRoute, setInitialRoute] = useState(null); // null = loading, 'Login' or 'Home'
+    const [initialRoute, setInitialRoute] = useState(null);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const user = await AsyncStorage.getItem('user');
-        if (user) {
-          setInitialRoute('Home');
-        } else {
-          setInitialRoute('Login');
-        }
-      } catch (err) {
-        console.error('Error checking login state:', err);
-        setInitialRoute('Login'); // fallback
-      }
-    };
+    useEffect(() => 
+    {
+        const checkUser = async () => 
+        {
+            try 
+            {
+                const user = await AsyncStorage.getItem('user');
+                if (user) 
+                {
+                    setInitialRoute('Home');
+                } 
+                else 
+                {
+                    setInitialRoute('Login');
+                }
+            }
+            catch (err) 
+            {
+                console.error('Error checking login state:', err);
+                setInitialRoute('Login'); // fallback
+            }
+        };
 
-    checkUser();
-  }, []);
+        checkUser();
+    }, []);
 
-  if (!initialRoute) {
-    // Still checking, show splash/loading
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1976D2" />
-      </View>
-    );
-  }
+    if (!initialRoute) 
+    {
+        // checking, show splash/loading
+        return (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#1976D2" />
+        </View>
+        );
+    }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen 
-          name="Login" 
-          component={LoginUI} 
-          options={{ headerShown: false }} 
+        <Stack.Navigator initialRouteName={initialRoute}>
+            <Stack.Screen 
+            name="Login" 
+            component={LoginUI} 
+            options={{ headerShown: false }} 
+            />
+            <Stack.Screen 
+            name="Home" 
+            component={HomeUI} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
+            
+            />
+            <Stack.Screen 
+            name="Alerts" 
+            component={AlertsUI} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
+            />
+            <Stack.Screen 
+            name="Analytics" 
+            component={AnalyticsUI} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
+            />
+            <Stack.Screen 
+            name="Contacts" 
+            component={Contacts} 
+            options=
+            {{ headerShown: true ,
+                headerLeft: () => null 
+            }} 
         />
-        <Stack.Screen 
-          name="Home" 
-          component={HomeUI} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="Alerts" 
-          component={AlertsUI} 
-          options={{ headerShown: false }} 
-        />
-      </Stack.Navigator>
+        </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  loadingContainer: {
+const styles = StyleSheet.create(
+{
+  loadingContainer: 
+  {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
