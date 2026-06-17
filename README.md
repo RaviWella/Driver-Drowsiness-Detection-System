@@ -69,6 +69,9 @@ WakeVision is built around the following design principles:
 
 The WakeVision architecture consists of four primary components:
 
+<img width="472" height="405" alt="image" src="https://github.com/user-attachments/assets/2e8133a8-ec87-4bf2-b432-d5cce7d1992b" />
+
+
 ### Edge Device (Raspberry Pi)
 
 The edge device is the core processing unit. It hosts:
