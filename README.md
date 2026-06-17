@@ -6,6 +6,9 @@ Group 7 | April 2025
 
 ***
 
+<img width="876" height="475" alt="Screenshot 2025-06-21 193715" src="https://github.com/user-attachments/assets/e5b1d63c-8554-4efa-8235-e17771ca5aa8" />
+
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -266,6 +269,9 @@ During development, the following design decisions were revised from the origina
 | Rumeth Sandinu | 20222449 | 2311688 |
 | Gawesh Gomes | 20220578 | 2313082 |
 | Mohamed Aslam | 20222439 | 2311131 |
+
+<img width="3024" height="4032" alt="WhatsApp Image 2025-06-21 at 19 30 46_2a34816f" src="https://github.com/user-attachments/assets/a7d90b06-92f5-4952-97dc-bc8242df925e" />
+
 
 **Module Leader**: Mr. Mohamed Ayoob
 
